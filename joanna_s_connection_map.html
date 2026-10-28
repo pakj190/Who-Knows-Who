@@ -59,6 +59,10 @@
             opacity: 0.8;
         }
 
+        #svg-wrapper, #svg-wrapper * {
+            cursor: default !important;
+        }        
+
         /* Custom Notification Toast (replaces alert) */
         #notification-toast {
             position: fixed;
@@ -111,7 +115,13 @@
         }
 
         #app-container {
-        overflow: hidden;
+            overflow: hidden;
+        }
+
+        #zoom-in, #zoom-out, #zoom-reset {
+            background-color: black;
+            color: white;
+            border: none;
         }
     </style>
 </head>
@@ -573,7 +583,7 @@
         
         const panzoom = Panzoom(svgWrapper, {
             maxScale: 10,
-            minScale: 0.1,
+            minScale: 1,
             step: 0.2,
             canvas: true, // This setting makes panning feel smoother
             cursor: 'inherit' // Inherit grabbing cursor from container
@@ -590,42 +600,6 @@
         document.getElementById('zoom-in').addEventListener('click', panzoom.zoomIn);
         document.getElementById('zoom-out').addEventListener('click', panzoom.zoomOut);
         document.getElementById('zoom-reset').addEventListener('click', panzoom.reset);
-
-        // 4. Handle Clicks on SVG Elements
-        let toastTimeout;
-        const toast = document.getElementById('notification-toast');
-
-        function showNotification(message) {
-            toast.textContent = message;
-            toast.classList.add('show');
-            
-            clearTimeout(toastTimeout);
-            toastTimeout = setTimeout(() => {
-                toast.classList.remove('show');
-            }, 2500); // Hide after 2.5 seconds
-        }
-
-        // Add event listener to the wrapper to catch clicks on any inner SVG elements
-        svgWrapper.addEventListener('click', (event) => {
-            // Try to find the closest interactive group (<g>) or text/rect element that was clicked
-            const target = event.target.closest('g, text, rect');
-            
-            if (target) {
-                // Extract useful info: if it has a data-name attribute, or its text content
-                let elementName = target.getAttribute('data-name') || target.textContent.trim();
-                
-                // Fallback for empty text or shapes without names
-                if (!elementName || elementName.length === 0) {
-                    elementName = target.tagName; 
-                }
-
-                // Show the custom notification proving interactivity works
-                showNotification(`You clicked on: ${elementName}`);
-                
-                // You can also log to console for debugging
-                console.log("SVG Element Clicked:", target);
-            }
-        });
-    </script>
+</script>
 </body>
 </html>
